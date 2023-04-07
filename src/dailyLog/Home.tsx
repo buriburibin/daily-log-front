@@ -5,9 +5,9 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {request} from "../utils/util";
 import {MobileDatePicker} from "@mui/x-date-pickers";
-import {useAlert} from "../common/Context";
 import Container from "@mui/material/Container";
 import {useNavigate} from "react-router-dom";
+import {useModal} from "../common/ModalContext";
 
 interface DailyLog {
     logSeq: number;
@@ -24,7 +24,7 @@ const Home = () => {
     const navigate = useNavigate();
     const [dailyLogList,setDailyLogList] = useState<DailyLog[]>([]);
     const [date, setDate] = useState<Dayjs | null>(dayjs(new Date()));
-    const {setAlert} = useAlert();
+    const {openModal,closeModal} = useModal();
 
     const dailyLogDetail = (logSeq: number) => {
         console.log(logSeq)
@@ -45,11 +45,11 @@ const Home = () => {
                     setDailyLogList(json);
                 } else {
                     console.log('일일업무 데이터 오류')
-                    setAlert('일일업무 데이터 수신 시 오류가 발생했습니다.',true, ()=>{});
+                    openModal({content:'일일업무 데이터 수신 시 오류가 발생했습니다.', type:'alert', callBack:()=>{closeModal()}});
                 }
             } catch (error) {
                 console.log('일일업무 데이터 요청 실패')
-                setAlert('일일업무 데이터 요청 시 오류가 발생했습니다.',true,()=>{});
+                openModal({content:'일일업무 데이터 요청 시 오류가 발생했습니다.', type:'alert', callBack:()=>{closeModal()}});
             }
         }
     }

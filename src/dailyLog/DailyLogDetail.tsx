@@ -1,31 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    Container, Divider,
-    Grid,
-    List,
-    ListItem, ListItemButton, ListItemIcon, ListItemText,
-    TextField,
-    Typography
-} from "@mui/material";
-import { EditorState, convertToRaw } from 'draft-js';
-import {Editor} from "react-draft-wysiwyg";
+import {Button, Card, Container, Divider, List, ListItem, ListItemText, TextField, Typography} from "@mui/material";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html';
-import TuiEditor from "../common/Editor";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
-import dayjs, {Dayjs} from "dayjs";
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {DemoItem} from "@mui/x-date-pickers/internals/demo";
+import dayjs from "dayjs";
 import 'dayjs/locale/ko';
 import {request} from "../utils/util";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {useAlert} from "../common/Context";
-import {Chip, ChipDelete} from "@mui/joy";
+import {useNavigate, useParams} from "react-router-dom";
+import {ChipDelete} from "@mui/joy";
+import {useModal} from "../common/ModalContext";
 
 interface DailyLog {
     logSeq: number;
@@ -61,7 +42,7 @@ const initDailyLog = {
 const DailyLogDetail = () => {
     const navigate = useNavigate();
     const {logSeq} = useParams();
-    const {setAlert} = useAlert();
+    const {openModal,closeModal} = useModal();
     const [dailyLog,setDailyLog] = useState<DailyLog>(initDailyLog);
     const [dailyLogCommentList,setDailyLogCommentList] = useState<DailyLogComment[]>();
     const [commentContent,setCommentContent] = useState<string>('');
@@ -78,21 +59,29 @@ const DailyLogDetail = () => {
                 });
 
             const json = await res.json();
-            if (!json.tenant) {
-                setAlert('해당 업무 작성자와 소속이 다릅니다.', true, () => {
-                    navigate('/', {replace: true})
+            if (json.delYn === 'N') {
+                if (!json.tenant) {
+                    openModal({content:'해당 업무 작성자와 소속이 다릅니다.', type:'alert', callBack:()=>{
+                        navigate('/', {replace: true})
+                        closeModal()
+                    }});
+                } else {
+                    setIsMine(json.mine)
                     setDailyLog(json)
-                });
+                    await getDailyLogCommentList()
+                }
             } else {
-                setIsMine(json.mine)
-                setDailyLog(json)
-                await getDailyLogCommentList()
+                openModal({content:'삭제된 업무입니다.', type:'alert', callBack:()=>{
+                        navigate('/', {replace: true})
+                        closeModal()
+                    }});
             }
         } catch (error) {
             console.log('일일업무 상세내용 요청 실패')
-            setAlert('일일업무 상세내용 요청 시 오류가 발생했습니다.', true, () => {
-                navigate('/', {replace: true})
-            });
+            openModal({content:'일일업무 상세내용 요청 시 오류가 발생했습니다.', type:'alert', callBack:() => {
+                    navigate('/', {replace: true})
+                    closeModal()
+                }});
         }
     }
 
@@ -136,20 +125,51 @@ const DailyLogDetail = () => {
     }
 
     const deleteDailyLogComment = async (commentSeq: number) => {
-        try {
-            const res: any = await request<string>(`/dailyLog/${logSeq}/comment/${commentSeq}`,
-                {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    mode: 'cors',
-                    cache: 'reload'
-                });
+        openModal({content:'코멘트를 삭제 하시겠습니까?', type:'dialog', callBack:async () => {
+                try {
+                    const res: any = await request<string>(`/dailyLog/${logSeq}/comment/${commentSeq}`,
+                        {
+                            method: 'DELETE',
+                            credentials: 'include',
+                            mode: 'cors',
+                            cache: 'reload'
+                        });
 
-            const json = await res.json();
-            setDailyLogCommentList(json)
-        } catch (error) {
-            console.log('일일업무 코멘트 삭제 요청 실패')
-        }
+                    const json = await res.json();
+                    if(!json.isMine){
+                        openModal({content:'내가 작성한 코멘트가 아닙니다.', type:'alert', callBack:() => {closeModal()}});
+                    } else {
+                        closeModal()
+                    }
+                    await setDailyLogCommentList(json.commentList)
+                } catch (error) {
+                    console.log('일일업무 코멘트 삭제 요청 실패')
+                }
+            }});
+    }
+
+    const deleteDailyLog = async () => {
+        openModal({content:'해당 업무를 삭제 하시겠습니까?', type:'dialog', callBack:async () => {
+                try {
+                    const res: any = await request<string>(`/dailyLog/${logSeq}`,
+                        {
+                            method: 'DELETE',
+                            credentials: 'include',
+                            mode: 'cors',
+                            cache: 'reload'
+                        });
+
+                    const json = await res.json();
+                    if(!json.isMine){
+                        openModal({content:'내가 작성한 업무가 아닙니다.', type:'alert', callBack:() => {closeModal()}});
+                    } else {
+                        navigate('/', {replace: true})
+                        closeModal()
+                    }
+                } catch (error) {
+                    console.log('일일업무 삭제 요청 실패')
+                }
+            }});
     }
 
     useEffect(() => {
@@ -208,7 +228,7 @@ const DailyLogDetail = () => {
             <TextField sx={{marginLeft:'10px', marginBottom:'20px', width:'calc(100% - 140px)'}} value={commentContent?commentContent:''} onChange={(event)=>setCommentContent(event.target.value?event.target.value:'')} label={'코멘트 작성'} ></TextField>
             <Button color={"info"} sx={{marginTop:'6px', color:'antiquewhite'}} size="large" variant="contained" onClick={registerDailyLogCommentList} >{'코멘트 등록'}</Button>
 
-            <Button fullWidth={true} color={"info"} sx={{marginTop:'6px', color:'antiquewhite',display:isMine?'':'none'}} size="large" variant="contained" >{'삭제'}</Button>
+            <Button fullWidth={true} color={"info"} sx={{marginTop:'6px', color:'antiquewhite',display:isMine?'':'none'}} size="large" variant="contained" onClick={()=>deleteDailyLog()} >{'삭제'}</Button>
         </Container>
     );
 };
