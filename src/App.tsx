@@ -6,13 +6,13 @@ import SignUp from './login/SignIn';
 import PrivateRouter from "./route/PrivateRouter";
 import Tenant from "./dailyLog/Tenant";
 import Write from "./dailyLog/Write";
-import AlertPopup from "./common/AlertPopup";
+import ModalPopup from "./common/ModalPopup";
 import DailyLogDetail from "./dailyLog/DailyLogDetail";
 
 function App() {
   return (
       <BrowserRouter>
-          <AlertPopup/>
+          <ModalPopup/>
           <Routes>
               {/* 인증 여부 상관 없이 접속 가능한 페이지 정의 */}
               {/*<Route index element={<MainPage/>}/>*/}
