@@ -31,6 +31,24 @@ const Home = () => {
         navigate(`/dailyLog/${logSeq}`, {replace: true})
     }
 
+    const setOperationTime = async (logSeq:number,type:string) => {
+        try {
+            const res: any = await request<string>(`/user/dailyLog/${logSeq}/operationTime/${type}`,
+                {
+                    method: 'POST', credentials: 'include', mode: 'cors'
+                });
+            const json = await res.json();
+            if (!json.isMine) {
+                console.log('내 업무가 아님')
+                openModal({content:'내가 작성한 업무가 아닙니다.', type:'alert', callBack:()=>{closeModal()}});
+            }
+            setDailyLogList(json.dailyLogList);
+        } catch (error) {
+            console.log(`${type==='start'?'시작':'종료'} 시간 입력시 오류 발생`)
+            openModal({content:`${type==='start'?'시작':'종료'} 시간 입력 요청시 발생했습니다.`, type:'alert', callBack:()=>{closeModal()}});
+        }
+    }
+
     const getDailyLogList = async () => {
         if(date){
             const dateStr = dayjs(date).format('YYYY-MM-DD');
@@ -80,11 +98,11 @@ const Home = () => {
                 </Card>
                 :dailyLogList.map(dailyLog =>
                 <Card key={dailyLog.logSeq} sx={{ minWidth: 150 , paddingLeft:'10%', paddingRight:'10%', marginBottom:'10px'}}
-                    onClick={event=>dailyLogDetail(dailyLog.logSeq)}
+                    onClick={()=>dailyLogDetail(dailyLog.logSeq)}
                 >
                     <CardContent>
                         <Typography sx={{ fontSize: 14 ,display:'inline'}}>
-                            계획 :
+                            계획 :&nbsp;
                         </Typography>
                         <Typography sx={{ fontSize: 20 ,display:'inline'}}>
                             {(new Date(dailyLog.setStartTime)).getHours()+':'+(new Date(dailyLog.setStartTime)).getMinutes().toString().padStart(2,'0')} ~ {(new Date(dailyLog.setEndTime)).getHours()+':'+(new Date(dailyLog.setEndTime)).getMinutes().toString().padStart(2,'0')}
@@ -97,15 +115,26 @@ const Home = () => {
                         </Typography>
                         <Typography dangerouslySetInnerHTML={{ __html: dailyLog.logContent.substring(0,200)+(dailyLog.logContent.length>200?'......':'')}} sx={{ mb: 1.5 , fontSize: 14 }} color="text.secondary">
                         </Typography>
+                        <Typography sx={{fontSize: 14, display: 'inline'}}>
+                        실행 :&nbsp;
+                        </Typography>
                         {dailyLog.startTime?
-                            <>
-                                <Typography sx={{fontSize: 14, display: 'inline'}}>
-                                실행 :
-                                </Typography><Typography sx={{fontSize: 20, display: 'inline'}}>
-                                    {dailyLog.startTime ? (new Date(dailyLog.startTime)).getHours() + ':' + (new Date(dailyLog.startTime)).getMinutes().toString().padStart(2, '0') : ''} ~ {dailyLog.endTime ? (new Date(dailyLog.endTime)).getHours() + ':' + (new Date(dailyLog.endTime)).getMinutes().toString().padStart(2, '0') : ''}
+                            (<>
+                                <Typography sx={{fontSize: 20, display: 'inline'}}>
+                                    {dailyLog.startTime ? (new Date(dailyLog.startTime)).getHours() + ':' + (new Date(dailyLog.startTime)).getMinutes().toString().padStart(2, '0') : ''} ~
                                 </Typography>
+                                    {dailyLog.endTime?
+                                        <Typography sx={{fontSize: 20, display: 'inline'}}>
+                                            {dailyLog.endTime ? (new Date(dailyLog.endTime)).getHours() + ':' + (new Date(dailyLog.endTime)).getMinutes().toString().padStart(2, '0') : ''}
+                                        </Typography>
+                                        :
+                                        <Button color={"info"} sx={{marginTop:'6px', color:'antiquewhite'}} size="large" variant="contained" onClick={(event)=>{setOperationTime(dailyLog.logSeq,'end');event.stopPropagation();}}>{'종료'}</Button>
+                                            }
                             </>
-                            : ''}
+                            )
+                            :
+                            <Button color={"info"} sx={{marginTop: '6px', color: 'antiquewhite'}} size="large" variant="contained" onClick={(event)=>{setOperationTime(dailyLog.logSeq,'start');event.stopPropagation();}}>{'시작'}</Button>
+                        }
                     </CardContent>
                 </Card>
             )}
