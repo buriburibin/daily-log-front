@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import {useNavigate} from "react-router-dom";
 
-const pages = [{name:'나의 업무',target:'/'}, {name:'전체 업무',target:'/tenant'}, {name:'업무 작성',target:'/write'}];
+const pages = [{name:'나의 업무',target:'/'}, {name:'전사 업무',target:'/tenant'}, {name:'업무 작성',target:'/write'}];
 
 function Navigation() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
