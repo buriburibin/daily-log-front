@@ -70,8 +70,13 @@ const DailyLogDetail = () => {
                     setDailyLog(json)
                     await getDailyLogCommentList()
                 }
-            } else {
+            } else if(json.delYn === 'Y') {
                 openModal({content:'삭제된 업무입니다.', type:'alert', callBack:()=>{
+                        navigate('/', {replace: true})
+                        closeModal()
+                    }});
+            } else {
+                openModal({content:'오류가 발생했습니다.', type:'alert', callBack:()=>{
                         navigate('/', {replace: true})
                         closeModal()
                     }});
