@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const ENDPOINT = 'http://192.168.0.58:8080';
 
 export async function request<TResponse>(
@@ -5,5 +7,9 @@ export async function request<TResponse>(
     config?: RequestInit,
 ): Promise<Response> {
     const response = await fetch(ENDPOINT+url, config);
+    const isAuthenticated = !!Cookies.get('isLogin');
+    if(isAuthenticated === null || !isAuthenticated){
+        window.location.href = '/login'
+    }
     return response;
 }

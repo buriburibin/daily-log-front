@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import {useNavigate} from "react-router-dom";
+import {request} from "../utils/util";
 
 const pages = [{name:'나의 업무',target:'/'}, {name:'전사 업무',target:'/tenant'}, {name:'업무 작성',target:'/write'}];
 
@@ -25,8 +26,25 @@ function Navigation() {
 
     const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(null);
-        navigation(pages[event.currentTarget.tabIndex].target)
+        if(pages[event.currentTarget.tabIndex]){
+            navigation(pages[event.currentTarget.tabIndex].target)
+        }
     };
+
+    const logOut = async () => {
+        try {
+            const res: any = await request<string>(`/login/logOut`,
+                {
+                    method: 'POST', credentials: 'include', mode: 'cors'
+                });
+            const json = await res.json();
+            if (json) {
+                console.log('로그인 성공')
+            }
+        } catch (error) {
+            console.log(`로그인 요청시 오류 발생`)
+        }
+    }
 
     return (
         <AppBar position="static">
@@ -118,7 +136,7 @@ function Navigation() {
                     </Box>
                     <Box sx={{ flexGrow: 0}}>
                         <Button
-                            onClick={handleCloseNavMenu}
+                            onClick={logOut}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             로그아웃
