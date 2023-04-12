@@ -2,7 +2,7 @@ import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './dailyLog/Home';
 import Login from './login/Login';
-import SignUp from './login/SignIn';
+import SignUp from './login/SignUp';
 import PrivateRouter from "./route/PrivateRouter";
 import Tenant from "./dailyLog/Tenant";
 import Write from "./dailyLog/Write";

@@ -1,15 +1,16 @@
-import {Alert, Backdrop, Button, Dialog, DialogActions, DialogTitle, Modal} from '@mui/material';
+import {
+    Alert,
+    Backdrop,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    Modal,
+    Typography
+} from '@mui/material';
 import {useModal} from './ModalContext';
 import React from "react";
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    p: 4,
-};
 
 const ModalPopup = () => {
     const { modalDataState, closeModal } = useModal();
@@ -19,7 +20,7 @@ const ModalPopup = () => {
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
-                open={modalDataState.open && modalDataState.type === 'alert'}
+                open={modalDataState.open && (modalDataState.type === 'alert' || modalDataState.type === 'info' || modalDataState.type === 'progress' || modalDataState.type === 'success')}
                 onClose={modalDataState.callBack}
                 closeAfterTransition
                 slots={{backdrop: Backdrop}}
@@ -29,7 +30,22 @@ const ModalPopup = () => {
                     },
                 }}
             >
-                <Alert sx={style} severity='error'>{modalDataState.content}</Alert>
+                <Typography>
+                    <Alert sx={{
+                        position: 'absolute' as 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        p: 4,
+                        display: modalDataState.type === 'progress'?'none':''
+                    }} severity={modalDataState.type === 'info'?'info':modalDataState.type === 'success'?'success':'error'}>{modalDataState.content}</Alert>
+                    <CircularProgress size={100} sx={{display: modalDataState.type === 'progress'?'':'none' ,
+                                            position: 'absolute' as 'absolute',
+                                            top: 'calc(50% - 50px)',
+                                            left: 'calc(50% - 50px)',
+                                            transform: 'translate(-50%, -50%)'}} />
+                </Typography>
             </Modal>
             <Dialog
                 open={modalDataState.open && modalDataState.type === 'dialog'}
