@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import {useNavigate} from "react-router-dom";
 import {request} from "../utils/util";
+import {ArrowBackIos} from "@mui/icons-material";
 
 const pages = [{name:'나의 업무',target:'/'}, {name:'전사 업무',target:'/tenant'}, {name:'업무 작성',target:'/write'}];
 
@@ -27,7 +28,7 @@ function Navigation() {
     const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(null);
         if(pages[event.currentTarget.tabIndex]){
-            navigation(pages[event.currentTarget.tabIndex].target)
+            navigation(pages[event.currentTarget.tabIndex].target,{replace: true})
         }
     };
 
@@ -144,6 +145,17 @@ function Navigation() {
                     </Box>
 
                 </Toolbar>
+                <IconButton
+                    size="small"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={()=>navigation(-1)}
+                    color="inherit"
+                    sx={{position:'fixed', top:'200px',display:{md:'none'}}}
+                >
+                    <ArrowBackIos sx={{position:'fixed', top:'70px'}} color={"info"}/>
+                </IconButton>
             </Container>
         </AppBar>
     );
