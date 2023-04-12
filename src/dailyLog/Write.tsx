@@ -30,7 +30,7 @@ const Write = () => {
     // const [endTime, setEndTime] = useState<Dayjs | null>(dayjs(new Date()));
     const [dailyLog, setDailyLog] = useState<DailyLog>({
         logTitle:'',logContent:'',logHtml:'',logDate:dayjs(new Date()).format('YYYY-MM-DD'),
-        setStartTime: dayjs(new Date()).format('YYYY-MM-DD HH:MM'),setEndTime: dayjs(new Date()).format('YYYY-MM-DD HH:MM')
+        setStartTime: dayjs(new Date()).format('YYYY-MM-DD HH:mm'),setEndTime: dayjs(new Date()).format('YYYY-MM-DD HH:mm')
     });
 
     const saveDailyLog = async () => {
@@ -99,9 +99,9 @@ const Write = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ko'}>
                 <MobileDatePicker sx={{marginLeft:'10px', marginRight:'20px', marginBottom:'10px'}} label={'업무 날짜'} disablePast={true} format={'YYYY년 MM월 DD일'} value={dayjs(dailyLog.logDate)} onChange={(newDate) => setDailyLog({...dailyLog,logDate:newDate?dayjs(newDate).format('YYYY-MM-DD'):dailyLog.logDate})} />
                 <Typography sx={{display:{md:'none'}}} ></Typography>
-                <MobileTimePicker sx={{marginLeft:'10px', marginRight:'20px', marginBottom:'10px'}} label={'시작 예정 시간'} defaultValue={dayjs(dailyLog.setStartTime)} onChange={(newStartTime) => setDailyLog({...dailyLog,setStartTime:newStartTime?dailyLog.logDate + ' ' + dayjs(newStartTime).format('HH:MM'):dailyLog.setStartTime})} />
+                <MobileTimePicker sx={{marginLeft:'10px', marginRight:'20px', marginBottom:'10px'}} label={'시작 예정 시간'} defaultValue={dayjs(dailyLog.setStartTime)} onChange={(newStartTime) => setDailyLog({...dailyLog,setStartTime:newStartTime?dailyLog.logDate + ' ' + dayjs(newStartTime).format('HH:mm'):dailyLog.setStartTime})} />
                 <Typography sx={{display:{md:'none'}}} ></Typography>
-                <MobileTimePicker sx={{marginLeft:'10px', marginRight:'20px', marginBottom:'10px'}} label={'종료 예정 시간'} defaultValue={dayjs(dailyLog.setEndTime)} onChange={(newEndTime) => setDailyLog({...dailyLog,setEndTime:newEndTime?dailyLog.logDate + ' ' + dayjs(newEndTime).format('HH:MM'):dailyLog.setEndTime})} />
+                <MobileTimePicker sx={{marginLeft:'10px', marginRight:'20px', marginBottom:'10px'}} label={'종료 예정 시간'} defaultValue={dayjs(dailyLog.setEndTime)} onChange={(newEndTime) => setDailyLog({...dailyLog,setEndTime:newEndTime?dailyLog.logDate + ' ' + dayjs(newEndTime).format('HH:mm'):dailyLog.setEndTime})} />
             </LocalizationProvider>
             <TuiEditor htmlStr={htmlStr} setHtmlStr={setHtmlStr}/>
             <Button fullWidth={true} color={"info"} sx={{marginTop:'6px', color:'antiquewhite'}} size="large" variant="contained" onClick={saveDailyLog}>{'저장'}</Button>
