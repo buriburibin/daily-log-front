@@ -16,8 +16,7 @@ const TuiEditor = ({ htmlStr, setHtmlStr }:IEditor) => {
         ['hr'],
         ['ul', 'ol', 'task'],
         ['table', 'link'],
-        // ['image'],
-        ['code'],
+        ['image'],
         ['scrollSync'],
     ];
     const editorRef = useRef<Editor>(null);
@@ -62,7 +61,7 @@ const TuiEditor = ({ htmlStr, setHtmlStr }:IEditor) => {
                     minHeight={'200px'}
                     // theme={''} // '' & 'dark'
                     // usageStatistics={false}
-                    // toolbarItems={toolbarItems}
+                    toolbarItems={toolbarItems}
                     useCommandShortcut={true}
                     plugins={[colorSyntax]}
                     onChange={onChangeEditor}
