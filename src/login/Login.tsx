@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import {Box, Button, TextField, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {request} from '../utils/util'
+import {useModal} from "../common/ModalContext";
 
 const Login = () => {
     const navigate = useNavigate();
+    const {openModal, closeModal} = useModal()
 
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
@@ -19,15 +21,17 @@ const Login = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(data)
-                });
+                },true);
 
             const json = await res.json();
-            if (json && json.result === 'success') {
-                console.log('로그인 성공')
+            if(json.success){
                 navigate('/', {replace: true})
             } else {
-                console.log('로그인 정보가 맞지 않아 로그인 실패')
-                alert('아이디나 비밀번호가 맞지 않습니다.');
+                openModal({
+                    content: json.msg, type: 'alert', callBack: () => {
+                        closeModal()
+                    }
+                });
             }
         } catch (error) {
             console.log('로그인 요청 실패')
@@ -35,19 +39,8 @@ const Login = () => {
         }
     }
 
-    const loginRequest = async (data: { userId: string; userPwd: string; }) => {
-        try {
-            return await request<string>('/login/signIn',
-                {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data)
-                });
-        } catch (error) {
-            console.log('로그인 요청 실패')
-        }
+    const goSignUp = () => {
+        navigate('/signUp', {replace: true})
     }
 
     return (
@@ -64,11 +57,11 @@ const Login = () => {
                 일일업무
             </Typography>
             <TextField onChange={(e)=>{setEmail(e.target.value)}} fullWidth id="email" label="E-Mail" variant="outlined" type={"email"} sx={{marginTop:'10px',marginBottom:'10px'}}/>
-            <TextField onChange={(e)=>{setPassword(e.target.value)}} fullWidth id="password" label="Password" variant="outlined" type={"password"} sx={{marginTop:'10px',marginBottom:'10px'}}/>
+            <TextField onChange={(e)=>{setPassword(e.target.value)}} onKeyPress={e => {if(e.key === 'Enter') {loginClick()}}} fullWidth id="password" label="Password" variant="outlined" type={"password"} sx={{marginTop:'10px',marginBottom:'10px'}}/>
             <Button fullWidth variant="contained" sx={{marginTop:'10px',marginBottom:'10px'}}
                 onClick={loginClick}
             >로그인</Button>
-            <Button fullWidth variant="contained" sx={{marginTop:'10px',marginBottom:'10px'}} color={"success"}>회원가입</Button>
+            <Button fullWidth variant="contained" sx={{marginTop:'10px',marginBottom:'10px'}} color={"success"} onClick={goSignUp}>회원가입</Button>
         </Box>
     );
 };
