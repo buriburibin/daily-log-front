@@ -124,7 +124,7 @@ const Tenant = () => {
             <Typography align={'center'} variant={"h2"}>
                 전사 업무
             </Typography>
-            <Button color={"info"} sx={{position:'absolute', top:'70px', right:'5px'}} size="small" variant="contained"
+            <Button color={useAutoScroll?'error':"info"} sx={{position:'absolute', top:'70px', right:'5px'}} size="small" variant="contained"
                     onClick={() => {
                         setUseAutoScroll(!useAutoScroll)
                     }}>자동스크롤</Button>
@@ -210,72 +210,6 @@ const Tenant = () => {
                             </Grid>
                         )}
                     </Grid>
-                // <div>
-                //     {teamList.map(teamInfo =>
-                //         <table key={teamInfo.teamSeq} style={{display:'inline-block', border:'1px solid black'}}>
-                //             <p style={{textAlign: 'center'}}>{teamInfo.teamName}</p>
-                //             {teamInfo.userInfoList.length < 1 ?
-                //                 <p>
-                //                     <Typography sx={{fontSize: 20}}>
-                //                         직원이 존재하지 않습니다.
-                //                     </Typography>
-                //                 </p> :
-                //                 <p style={{display:'inline-block'}}>
-                //                     {teamInfo.userInfoList.map(userInfo =>
-                //                         <p style={{display:'inline-block', border:'1px solid black'}}>
-                //                             <p style={{textAlign: 'center'}}>{userInfo.userName}</p>
-                //                             {userInfo.dailyLogList.length < 1 ?
-                //                                 <p>
-                //                                     <Typography sx={{fontSize: 20}}>
-                //                                         일일업무 데이터가 존재하지 않습니다.
-                //                                     </Typography>
-                //                                 </p> :
-                //                                 userInfo.dailyLogList.map(dailyLog =>
-                //                                     <p key={dailyLog.logSeq} onClick={event => dailyLogDetail(dailyLog.logSeq)}>
-                //                                         <Typography sx={{fontSize: 14, display: 'inline'}}>
-                //                                             계획 :
-                //                                         </Typography>
-                //                                         <Typography sx={{fontSize: 20, display: 'inline'}}>
-                //                                             {(new Date(dailyLog.setStartTime)).getHours() + ':' + (new Date(dailyLog.setStartTime)).getMinutes().toString().padStart(2, '0')} ~ {(new Date(dailyLog.setEndTime)).getHours() + ':' + (new Date(dailyLog.setEndTime)).getMinutes().toString().padStart(2, '0')}
-                //                                         </Typography>
-                //                                         <Typography variant="h5" component="div" sx={{
-                //                                             fontSize: 20,
-                //                                             display: {md: 'inline', xs: 'block'},
-                //                                             marginLeft: {md: '20px'}
-                //                                         }}>
-                //                                             {dailyLog.logWriter}
-                //                                         </Typography>
-                //                                         <Typography variant="h5" component="div" sx={{
-                //                                             fontSize: 20,
-                //                                             display: {md: 'inline', xs: 'block'},
-                //                                             marginLeft: {md: '20px'}
-                //                                         }}>
-                //                                             {dailyLog.logTitle}
-                //                                         </Typography>
-                //                                         <Typography
-                //                                             dangerouslySetInnerHTML={{__html: dailyLog.logContent.substring(0, 200) + (dailyLog.logContent.length > 200 ? '......' : '')}}
-                //                                             sx={{mb: 1.5, fontSize: 14}} color="text.secondary">
-                //                                         </Typography>
-                //                                         {dailyLog.startTime ?
-                //                                             <>
-                //                                                 <Typography
-                //                                                     sx={{fontSize: 14, display: 'inline'}}>
-                //                                                     실행 :
-                //                                                 </Typography><Typography
-                //                                                 sx={{fontSize: 20, display: 'inline'}}>
-                //                                                 {dailyLog.startTime ? (new Date(dailyLog.startTime)).getHours() + ':' + (new Date(dailyLog.startTime)).getMinutes().toString().padStart(2, '0') : ''} ~ {dailyLog.endTime ? (new Date(dailyLog.endTime)).getHours() + ':' + (new Date(dailyLog.endTime)).getMinutes().toString().padStart(2, '0') : ''}
-                //                                             </Typography>
-                //                                             </>
-                //                                             : ''}
-                //                                     </p>
-                //                                 )}
-                //                         </p>
-                //                     )}
-                //                 </p>
-                //             }
-                //         </table>
-                //     )}
-                // </div>
             }
         </>
     );
