@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Box, Button, Card, CardActions, CardContent, Grid, Paper, styled, Typography} from "@mui/material";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
@@ -36,6 +36,8 @@ const Tenant = () => {
     const [date, setDate] = useState<Dayjs | null>(dayjs(new Date()));
     const {openModal,closeModal} = useModal();
     const [teamList,setTeamList] = useState<TeamInfo[]>([]);
+    const container = useRef<HTMLDivElement>(null);
+    const [useAutoScroll,setUseAutoScroll] = useState<boolean>(false);
 
     const dailyLogDetail = (logSeq: number) => {
         console.log(logSeq)
@@ -79,6 +81,35 @@ const Tenant = () => {
         };
     }, []);
 
+    function scrollHorizontally() {
+        if(container != null && container.current != null){
+            if (container.current.scrollLeft+1 <= container.current.scrollWidth - container.current.clientWidth) {
+                container.current.scrollLeft += 10;
+            } else {
+                container.current.scrollLeft -= container.current.clientWidth;
+            }
+        }
+    }
+
+    useEffect(() => {
+        let scrolling: NodeJS.Timer|null = null;
+        if(useAutoScroll){
+            scrolling = setInterval(() => {
+                scrollHorizontally();
+            }, 1000);
+        } else {
+            if(scrolling){
+                clearInterval(scrolling);
+            }
+        }
+
+        return () => {
+            if(scrolling){
+                clearInterval(scrolling);
+            }
+        };
+    }, [useAutoScroll]);
+
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         ...theme.typography.body2,
@@ -93,6 +124,10 @@ const Tenant = () => {
             <Typography align={'center'} variant={"h2"}>
                 전사 업무
             </Typography>
+            <Button color={"info"} sx={{position:'absolute', top:'70px', right:'5px'}} size="small" variant="contained"
+                    onClick={() => {
+                        setUseAutoScroll(!useAutoScroll)
+                    }}>자동스크롤</Button>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <div style={{textAlign: 'center', verticalAlign: 'middle'}}>
                     <Button color={"info"} sx={{marginTop: '6px', color: 'antiquewhite'}} size="large" variant="contained"
@@ -115,7 +150,7 @@ const Tenant = () => {
                         </Typography>
                     </CardContent>
                 </Card>:
-                    <Grid container overflow={"auto"} flexWrap={"nowrap"} height={'calc(100vh - 200px)'}>
+                    <Grid container component={'div'} ref={container} overflow={"auto"} flexWrap={"nowrap"} height={'calc(100vh - 200px)'}>
                         {teamList.map(teamInfo=>
                             <Grid key={teamInfo.teamSeq}>
                                 <Item sx={{fontSize:'30px', fontWeight:'bold'}}>{teamInfo.teamName}</Item>
