@@ -69,6 +69,16 @@ const Tenant = () => {
         getTenantDailyLogList()
     },[date])
 
+    useEffect(() => {
+        let polling = setInterval(() => {
+            getTenantDailyLogList();
+        }, 60000);
+
+        return () => {
+            clearInterval(polling);
+        };
+    }, []);
+
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         ...theme.typography.body2,
